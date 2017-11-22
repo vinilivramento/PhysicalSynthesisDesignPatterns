@@ -1,0 +1,10 @@
+In this example, two different applications of factory pattern are exploited:
+
+1) Suppose you need to create a complex object of a given type that requires several other objects to be instantiated. Therefore, a factory methos is provided
+so that the client only has to specify the type (e.g. name) of the object to be created, while all the inner instantiation details are hidden inside the factory.
+
+2) In this case, a factory is used to create different kinds of lazy-instantiated parameterized objects. Therefore, when the client asks the factory for a given
+object type and its parameters, the factory is responsible for instantiating the object (if it was not already instantiated) and returning to the user.
+
+For the factory pattern, suppose that we have three different types of optimization: power, timing, and area. Each of them inherites an abstract optimization class with an 
+optimize function. Therefore, the factory is responsible for creating each of the concrete optimization classes, while hidding specific instantiation details from the user.
