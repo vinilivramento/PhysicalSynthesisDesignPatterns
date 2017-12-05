@@ -2,7 +2,13 @@ project(physicalsynthesisdesignpatterns)
 cmake_minimum_required(VERSION 3.2.2)
 set (CMAKE_CXX_STANDARD 14)
 
+#Required Libraries
 find_package(Boost 1.59 REQUIRED)
+
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 

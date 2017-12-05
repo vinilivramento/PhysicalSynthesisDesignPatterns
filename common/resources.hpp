@@ -6,7 +6,14 @@
 
 namespace common
 {
-  class TimingAnalyzer : public boost::noncopyable
+  class Analyzer : public boost::noncopyable
+  {
+    public:
+      virtual ~Analyzer(){}
+      virtual void analyze() = 0;
+  };
+
+  class TimingAnalyzer : public Analyzer 
   {
     public:
       TimingAnalyzer()
@@ -18,13 +25,13 @@ namespace common
         std::cout << "Destructing TimingAnalyzer!" << std::endl;
       }
       
-      void Analyze()
+      void analyze() override
       {
         std::cout << "Running TimingAnalyzer" << std::endl;
       }
   };
 
-  class PowerAnalyzer : public boost::noncopyable
+  class PowerAnalyzer : public Analyzer 
   {
     PowerAnalyzer()
     {
@@ -36,13 +43,13 @@ namespace common
       std::cout << "Destructing PowerAnalyzer!" << std::endl;
     }
 
-    void Analyze()
+    void analyze() override
     {
       std::cout << "Running PowerAnalyzer" << std::endl;
     }
   };
 
-  class AreaAnalyzer : public boost::noncopyable
+  class AreaAnalyzer : public Analyzer 
   {
     AreaAnalyzer()
     {
@@ -54,7 +61,7 @@ namespace common
       std::cout << "Destructing AreaAnalyzer!" << std::endl;
     }
 
-    void Analyze()
+    void analyze() override
     {
       std::cout << "Running AreaAnalyzer" << std::endl;
     }

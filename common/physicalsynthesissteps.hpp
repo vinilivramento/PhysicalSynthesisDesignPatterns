@@ -8,13 +8,13 @@
 namespace common
 {
 
-class PhysicalSynthesisBase
+class PhysicalSynthesisStep
 {
   public:
-    virtual void Run() = 0;
+    virtual void run() = 0;
 };
 
-class GlobalPlacement : public PhysicalSynthesisBase
+class GlobalPlacement : public PhysicalSynthesisStep
 {
   public:
     GlobalPlacement()
@@ -27,13 +27,13 @@ class GlobalPlacement : public PhysicalSynthesisBase
       std::cout << "Destructing GlobalPlacement" << std::endl;
     }
 
-    void Run() override 
+    void run() override 
     {
       std::cout << "Running GlobalPlacement" << std::endl;
     }
 };
 
-class DetailedPlacement : public PhysicalSynthesisBase
+class DetailedPlacement : public PhysicalSynthesisStep
 {
   public:
     DetailedPlacement()
@@ -46,13 +46,13 @@ class DetailedPlacement : public PhysicalSynthesisBase
       std::cout << "Destructing DetailedPlacement" << std::endl;
     }
 
-    void Run() override 
+    void run() override 
     {
       std::cout << "Running DetailedPlacement" << std::endl;
     }
 };
 
-class ClockNetworkSynthesis : public PhysicalSynthesisBase
+class ClockNetworkSynthesis : public PhysicalSynthesisStep
 {
   public:
     ClockNetworkSynthesis()
@@ -65,13 +65,13 @@ class ClockNetworkSynthesis : public PhysicalSynthesisBase
       std::cout << "Destructing ClockNetworkSynthesis" << std::endl;
     }
 
-    void Run() override 
+    void run() override 
     {
       std::cout << "Running ClockNetworkSynthesis" << std::endl;
     }
 };
 
-class GlobalRouting : public PhysicalSynthesisBase
+class GlobalRouting : public PhysicalSynthesisStep
 {
   public:
     GlobalRouting()
@@ -84,13 +84,13 @@ class GlobalRouting : public PhysicalSynthesisBase
       std::cout << "Destructing GlobalRouting" << std::endl;
     }
 
-    void Run() override 
+    void run() override 
     {
       std::cout << "Running GlobalRouting" << std::endl;
     }
 };
 
-class DetailedRouting : public PhysicalSynthesisBase
+class DetailedRouting : public PhysicalSynthesisStep
 {
   public:
     DetailedRouting()
@@ -103,7 +103,7 @@ class DetailedRouting : public PhysicalSynthesisBase
       std::cout << "Destructing DetailedRouting" << std::endl;
     }
 
-    void Run() override 
+    void run() override 
     {
       std::cout << "Running DetailedRouting" << std::endl;
     }
@@ -111,6 +111,10 @@ class DetailedRouting : public PhysicalSynthesisBase
 
 class MajorPhysicalSynthesisSteps
 {
+  MajorPhysicalSynthesisSteps()
+  {
+  }
+
   public:
     GlobalPlacement globalPlacement;
     DetailedPlacement detailedPlacement;
@@ -121,6 +125,12 @@ class MajorPhysicalSynthesisSteps
     TimingOptimization timingOptimization;
     PowerOptimization powerOptimization;
     AreaOptimization areaOptimization;
+
+    static MajorPhysicalSynthesisSteps& getInstance()
+    {
+      static MajorPhysicalSynthesisSteps instance;
+      return instance;
+    }
 };
 
 } //end of namespace majorsteps

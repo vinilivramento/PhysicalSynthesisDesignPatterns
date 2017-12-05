@@ -4,11 +4,13 @@
 #include <iostream>
 #include <common/optimization.hpp>
 #include <common/physicalsynthesissteps.hpp>
-#include <patterns/behavioral/command/command.hpp>
 
+#include <patterns/behavioral/command.hpp>
 
 #include <patterns/creational/abstract_factory.hpp>
+#include <patterns/creational/builder.hpp>
 #include <patterns/creational/factory_method.hpp>
+#include <patterns/creational/prototype.hpp>
 #include <patterns/creational/singleton.hpp>
 
 using namespace creational;
@@ -26,6 +28,36 @@ TEST_CASE("Abstract factory", "[creational][abstract_factory]") {
   std::cout << "---Global Optimization" << std::endl;
   DetailedPlacementAndSpreadingEngine globalOptimizationEngine( std::make_unique<GlobalCellOptimizationFactory>() );
   globalOptimizationEngine.minimizeCongestionAndWirelength();
+
+  std::cout << std::endl;
+}
+
+TEST_CASE("builder", "[creational][builder]") {
+  std::cout << "-------------Builder---------------" << std::endl;  
+
+  SynthesisFlowDirector director(std::make_unique<LowEffortFlowBuilder>());
+
+  {
+    std::cout << "---Low Effort Flow" << std::endl;
+    auto flow = director.createFlow();
+    flow->run();
+  }
+
+  {
+    std::cout << "---Medium Effort Flow" << std::endl;
+    director.setBuilder(std::make_unique<MediumEffortFlowBuilder>());
+    auto flow = director.createFlow();
+    flow->run();
+  }
+
+  {
+    std::cout << "---High Effort Flow" << std::endl;
+    director.setBuilder(std::make_unique<HighEffortFlowBuilder>());
+    auto flow = director.createFlow();
+    flow->run();
+  }
+
+  std::cout << std::endl;
 }
 
 TEST_CASE("Factory method", "[creational][factory_method]") {
@@ -41,6 +73,27 @@ TEST_CASE("Factory method", "[creational][factory_method]") {
   std::unique_ptr<Optimization> powerOpt = optFactory.create("power-opt");
   areaOpt->optimize();
   powerOpt->optimize();
+
+  std::cout << std::endl;
+}
+
+TEST_CASE("Prototype", "[creational][Prototype]") {
+  std::cout << "-------------Prototype---------------" << std::endl;
+
+  CellSizingSolution sizingSolution({"X1", "X4", "X2", "X8"}, 5.0);
+  PlacementSolution placementSolution({Location(1,2), Location(5,8), Location(4,3), Location(9,9)}, 2.0);
+
+  std::cout << "Initial Sizing Solution...." << std::endl;
+  std::cout << sizingSolution << std::endl;
+
+  std::cout << "Initial Placement Solution...." << std::endl;
+  std::cout << placementSolution << std::endl;
+
+  std::cout << "---Running PlacementAndSizingOptimization" << std::endl;
+  PlacementAndSizingOptimization optimization(5);
+  optimization.optimize(sizingSolution, placementSolution);
+  
+  std::cout << std::endl;
 }
 
 TEST_CASE("Singleton", "[creational][singleton]") {
@@ -49,8 +102,9 @@ TEST_CASE("Singleton", "[creational][singleton]") {
   StandardCellLibrary& cellLibrary = StandardCellLibrary::getInstance();
   StandardCellLibrary& cellLibrary2 = StandardCellLibrary::getInstance();
   REQUIRE(&cellLibrary == &cellLibrary2);
-}
 
+  std::cout << std::endl;
+}
 
 
 //---------------------- Behavioral TestCases -----------------------------//

@@ -1,7 +1,7 @@
-file(GLOB creational_patters_SRC 
+file(GLOB creational_patterns_SRC 
     "*.hpp"
     "*.cpp"
 )
 
-add_library(physicalsynthesisdesignpatterns_creational ${creational_patters_SRC})
+add_library(physicalsynthesisdesignpatterns_creational ${creational_patterns_SRC})
 
