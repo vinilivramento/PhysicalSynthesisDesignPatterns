@@ -1,5 +1,7 @@
-add_subdirectory(command)
+file(GLOB behavioral_patterns_SRC 
+    "*.hpp"
+    "*.cpp"
+)
 
-add_library(physicalsynthesisdesignpatterns_behavioral ${SOURCE})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/command/)
+add_library(physicalsynthesisdesignpatterns_behavioral ${behavioral_patterns_SRC})
 

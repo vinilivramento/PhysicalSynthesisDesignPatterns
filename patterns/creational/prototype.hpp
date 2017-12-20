@@ -4,21 +4,16 @@
 #include <memory>
 #include <random>
 
+#include <common/utils.hpp>
+
 namespace creational
 {
-  using Location = std::pair<unsigned, unsigned>;
-  std::ostream& operator<< (std::ostream& os, const Location & location)
-  {
-    os << "(" << location.first << ", " << location.second << ")";
-    return os;  
-  }
-
   template<typename T>
   class PrototypeSolution
   {
     std::vector<T> m_solution;
     double m_quality;
-    
+
     public:
       PrototypeSolution(std::vector<T> solution, double quality) : m_solution(solution), m_quality(quality)
       {
@@ -64,10 +59,10 @@ namespace creational
       }
   };
 
-  class PlacementSolution : public PrototypeSolution<Location>
+  class PlacementSolution : public PrototypeSolution<common::Location>
   {
     public:
-      PlacementSolution(std::vector<Location> solution, double quality) : PrototypeSolution(solution, quality)
+      PlacementSolution(std::vector<common::Location> solution, double quality) : PrototypeSolution(solution, quality)
       {
         std::cout << "Constructing PlacementSolution" << std::endl;
       }
@@ -148,7 +143,7 @@ namespace creational
 
             curSolution->setQuality(realDist(generator));
             for(unsigned i = 0; i < curSolution->getSolution().size(); ++i)
-              curSolution->setCellSolution(i, Location(intDist(generator), intDist(generator)));
+              curSolution->setCellSolution(i, common::Location(intDist(generator), intDist(generator)));
           }
 
           if(*curSolution > *bestSolution)

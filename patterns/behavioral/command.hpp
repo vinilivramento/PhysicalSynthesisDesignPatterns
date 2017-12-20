@@ -12,26 +12,26 @@
 namespace behavioral
 {
 
-  class Command
-  {
-    using CommandFunction = std::function<void()>;
-    using CommandQueue = std::vector<CommandFunction>;
+  /*class Command*/
+  //{
+    //using CommandFunction = std::function<void()>;
+    //using CommandQueue = std::vector<CommandFunction>;
 
-    CommandQueue m_commands;
+    //CommandQueue m_commands;
 
-    protected: 
-      void AddCommand(CommandFunction func);
+    //protected: 
+      //void AddCommand(CommandFunction func);
 
-    public:
-      void Run();
+    //public:
+      //void Run();
          
-  };
+  //};
 
-  class LowEffortPhysicalSynthesisFlow : public Command
-  {
-    public:
-      LowEffortPhysicalSynthesisFlow(const common::MajorPhysicalSynthesisSteps & majorSteps);
-  };
+  //class LowEffortPhysicalSynthesisFlow : public Command
+  //{
+    //public:
+      //LowEffortPhysicalSynthesisFlow(const common::MajorPhysicalSynthesisSteps & majorSteps);
+  //};
 
 } // end of namespace behavioral
 

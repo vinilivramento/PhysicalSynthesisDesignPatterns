@@ -1,8 +1,7 @@
-#ifndef PATTERNS_COMMON_HPP
-#define PATTERNS_COMMON_HPP
+#ifndef COMMON_OPTIMIZATION_HPP
+#define COMMON_OPTIMIZATION_HPP
 
 #include <iostream> 
-#include <memory>
 
 #include "resources.hpp"
 
@@ -59,4 +58,4 @@ class AreaOptimization : public Optimization
 
 } //end of namespace common
 
-#endif //PATTERNS_COMMON_HPP
+#endif //COMMON_OPTIMIZATION_HPP
