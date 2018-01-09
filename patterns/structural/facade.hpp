@@ -4,11 +4,38 @@
 #include <iostream>
 #include <memory>
 #include <common/utils.hpp>
+#include <patterns/creational/builder.hpp>
 
 namespace structural
 {
-//A simple interface for a complex system. Hide all complexity
-//Maybe a facade for place, cts and route
+
+class PhysicalSynthesisFacade
+{
+  public:
+    void place()
+    {
+      creational::LowEffortFlowBuilder flowBuilder;
+      flowBuilder.startFlow();
+      flowBuilder.buildPlacementFlow();
+      flowBuilder.getFlow()->run();
+    }
+
+    void cts()
+    {
+      creational::LowEffortFlowBuilder flowBuilder;
+      flowBuilder.startFlow();
+      flowBuilder.buildCtsFlow();
+      flowBuilder.getFlow()->run();
+    }
+    
+    void route()
+    {
+      creational::LowEffortFlowBuilder flowBuilder;
+      flowBuilder.startFlow();
+      flowBuilder.buildRoutingFlow();
+      flowBuilder.getFlow()->run();
+    }
+};
 
 } //end of namespace structural
 

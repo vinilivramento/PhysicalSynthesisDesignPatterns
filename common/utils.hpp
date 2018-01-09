@@ -14,6 +14,12 @@ namespace common
   
   enum class LogicFunction {INV, NAND2, NOR2};
 
+  struct Net
+  {
+    std::string name;
+    unsigned num_pins;
+  };
+
   struct TimingPoint
   {
     unsigned id;
@@ -34,6 +40,7 @@ namespace common
     unsigned id;
     common::Location location;
     common::Shape shape;
+    std::string size;
   };
 
 } //end of namespace common

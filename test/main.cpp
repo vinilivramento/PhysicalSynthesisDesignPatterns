@@ -5,7 +5,9 @@
 #include <common/optimization.hpp>
 #include <common/physicalsynthesissteps.hpp>
 
+#include <patterns/behavioral/chain_of_responsability.hpp>
 #include <patterns/behavioral/command.hpp>
+#include <patterns/behavioral/observer.hpp>
 #include <patterns/behavioral/strategy.hpp>
 
 #include <patterns/creational/abstract_factory.hpp>
@@ -16,7 +18,11 @@
 
 #include <patterns/structural/adapter.hpp>
 #include <patterns/structural/bridge.hpp>
+#include <patterns/structural/composite.hpp>
 #include <patterns/structural/decorator.hpp>
+#include <patterns/structural/facade.hpp>
+#include <patterns/structural/flyweight.hpp>
+#include <patterns/structural/proxy.hpp>
 
 using namespace common;
 using namespace behavioral;
@@ -121,36 +127,105 @@ TEST_CASE("Singleton", "[creational][singleton]")
 
 //---------------------- Behavioral TestCases -----------------------------//
 
+TEST_CASE("ChainOfResponsability", "[behavioral][chain_of_responsability]") 
+{
+  std::cout << "----------Chain of Responsability Test------------" << std::endl;
+  
+  auto ilpRipUpAndReRoute= std::make_shared<ILPRipUpAndReRoute>();
+  auto aStarRipUpAndReRoute = std::make_shared<AStarRipUpAndReRoute>(ilpRipUpAndReRoute);
+  auto fastGreedyRipUpAndReRoute= std::make_shared<FastGreedyRipUpAndReRoute>(aStarRipUpAndReRoute);
+
+  std::vector<Net> unroutedNets { {"n1", 2}, {"n2", 3}, {"n3", 4}, {"n4", 5}, {"n5", 6} };
+
+  for(auto & net : unroutedNets)
+  {
+    std::cout << "--Rip-up and ReRoute " << net.name << std::endl;
+    fastGreedyRipUpAndReRoute->handleRouteRequest(net);
+  }
+}
+
 TEST_CASE("Command", "[behavioral][command]") 
 {
   std::cout << "----------Command Test------------" << std::endl;
 
-/*  using namespace behavioral;*/
-  //using namespace common;
+  //client GUI
+  CellTransformer transformer;
+  auto receiver = std::bind(&CellTransformer::transform, &transformer, std::placeholders::_1);
+  CommandInvoker invoker;
+  
+  std::cout << "Executing Commands" << std::endl;
+  auto cmd1 = std::make_shared<CellTransformCommand>(receiver, Transform{1, TransformType::MOVE, Location{1,2}, Location{3,4}});
+  invoker.executeCommand(cmd1);
 
-  //MajorPhysicalSynthesisSteps majorPhysicalSynthesisSteps;
+  auto cmd2 = std::make_shared<CellTransformCommand>(receiver, Transform{2, TransformType::MOVE, Location{3,4}, Location{7,8}});
+  invoker.executeCommand(cmd2);
 
-  //std::cout << "   #### Low Effort Flow #### " << std::endl;
-    
-  //LowEffortPhysicalSynthesisFlow lowEffortFlow(majorPhysicalSynthesisSteps);
-  /*lowEffortFlow.Run();*/
+  auto cmd3 = std::make_shared<CellTransformCommand>(receiver, Transform{3, TransformType::MOVE, Location{6,6}, Location{9,9}});
+  invoker.executeCommand(cmd3);
 
-  //std::cout << "   #### High Effort Flow #### " << std::endl;
+  std::cout << "Undoing Commands" << std::endl;
+  invoker.undo();
+  invoker.undo();
 
-  //TimingOptimization timingOptimization;
-  //PowerOptimization powerOptimization;
+  std::cout << "Redoing Commands" << std::endl;
+  invoker.redo();
 
-  //Command highEfforPhysicalSynthesisFlow;
-  //highEfforPhysicalSynthesisFlow.AddCommand([&majorPhysicalSynthesisSteps](){ majorPhysicalSynthesisSteps.globalPlacement.Run(); });
-  //highEfforPhysicalSynthesisFlow.AddCommand([&majorPhysicalSynthesisSteps](){ majorPhysicalSynthesisSteps.detailedPlacement.Run(); });
-  //highEfforPhysicalSynthesisFlow.AddCommand([&majorPhysicalSynthesisSteps](){ majorPhysicalSynthesisSteps.clockNetworkSynthesis.Run(); });
-  //highEfforPhysicalSynthesisFlow.AddCommand([&majorPhysicalSynthesisSteps](){ majorPhysicalSynthesisSteps.globalRouting.Run(); });
-  //highEfforPhysicalSynthesisFlow.AddCommand([&majorPhysicalSynthesisSteps](){ majorPhysicalSynthesisSteps.detailedRouting.Run(); });
+  std::cout << "Executing Commands" << std::endl;
+  auto cmd4 = std::make_shared<CellTransformCommand>(receiver, Transform{4, TransformType::RESIZE, "X1", "X8"});
+  invoker.executeCommand(cmd4);
 
+  auto cmd5 = std::make_shared<CellTransformCommand>(receiver, Transform{4, TransformType::MOVE, Location{8,6}, Location{10,10}});
+  invoker.executeCommand(cmd5);
 
+  auto cmd6 = std::make_shared<CellTransformCommand>(receiver, Transform{5, TransformType::RESIZE, "X8", "X2"});
+  invoker.executeCommand(cmd6);
 
-  /*highEfforPhysicalSynthesisFlow.Run();*/
+  std::cout << "Undoing Commands" << std::endl;
+  invoker.undo();
+  invoker.undo();
+  invoker.undo();
+
+  std::cout << "Redoing Commands" << std::endl;
+  invoker.redo();
+  invoker.redo();
+  invoker.redo();
 }
+
+TEST_CASE("Observer", "[behavioral][observer]") 
+{
+  std::cout << "----------Observer Test------------" << std::endl;
+
+  std::cout << "Creating standard cells with two properties" << std::endl; 
+  CellProperties<std::string> cellNames;  
+  CellProperties<double> cellAreas;  
+
+  behavioral::StandardCells stdCells; 
+  stdCells.attach(&cellNames);
+  stdCells.attach(&cellAreas);
+
+  CellId c1 = stdCells.create();
+  CellId c2 = stdCells.create();
+  CellId c3 = stdCells.create();
+
+  cellNames[c1] = "c1";
+  cellNames[c2] = "c2";
+  cellNames[c3] = "c3";
+
+  cellAreas[c1] = 1.0;
+  cellAreas[c2] = 2.0;
+  cellAreas[c3] = 2.0;
+
+  std::cout << "The properties have size " << cellNames.size() << " and " << cellAreas.size() << std::endl;
+  
+  std::cout << "Detaching cellAreas properties" << std::endl;
+  stdCells.detach(&cellAreas);
+
+  CellId c4 = stdCells.create();
+  CellId c5 = stdCells.create();
+
+  std::cout << "The properties have size " << cellNames.size() << " and " << cellAreas.size() << std::endl;
+}
+
 
 TEST_CASE("Strategy", "[behavioral][strategy]") 
 {
@@ -226,6 +301,39 @@ TEST_CASE("Bridge", "[structural][bridge]")
   }
 }
 
+TEST_CASE("Composite", "[structural][composite]") 
+{
+  std::cout << "-------------Composite---------------" << std::endl;
+
+  Cell c1{0, Location(1,1), Shape(3, 4)};
+  Cell c2{1, Location(3,3), Shape(2, 2)};
+  Cell c3{2, Location(9,7), Shape(6, 3)};
+
+  auto c1Visualization = std::make_shared<CellVisualization>(c1);
+  auto c2Visualization = std::make_shared<CellVisualization>(c2);
+  auto c3Visualization = std::make_shared<CellVisualization>(c3);
+
+  c1Visualization->setColor("Red");
+  c2Visualization->setColor("Blue");
+  c3Visualization->setDontTouch(true);
+
+  std::cout << "Handling 3 cells as a composite" << std::endl;
+
+  CellVisualizationGroup cellGroup;
+  cellGroup.add(c1Visualization);
+  cellGroup.add(c2Visualization);
+  cellGroup.add(c3Visualization);
+  cellGroup.setColor("Green");
+  cellGroup.setDontTouch(false);
+
+  std::cout << "Handling 2 cells as a composite" << std::endl;
+
+  cellGroup.erase(c2Visualization);
+  cellGroup.setColor("Black");
+  cellGroup.setDontTouch(false);
+}
+
+
 TEST_CASE("Decorator", "[structural][decorator]") 
 {
   std::cout << "-------------Decorator---------------" << std::endl;
@@ -255,3 +363,90 @@ TEST_CASE("Decorator", "[structural][decorator]")
   }
 
 }
+
+TEST_CASE("Facade", "[structural][facade]") 
+{
+  std::cout << "-------------Facade---------------" << std::endl;
+  PhysicalSynthesisFacade physicalSynthesis;
+
+  std::cout << "Placement flow" << std::endl;
+  physicalSynthesis.place();
+
+  std::cout << "Clock-Tree Synthesis flow" << std::endl;
+  physicalSynthesis.cts();
+
+  std::cout << "Routing flow" << std::endl;
+  physicalSynthesis.route();
+}
+
+TEST_CASE("Flyweight", "[structural][flyweight]") 
+{
+  std::cout << "-------------Flyweight---------------" << std::endl;
+  structural::StandardCells stdCells;
+  stdCells.reserve(20);
+  auto id1  = stdCells.create("c1", "NAND3_X32");
+  auto id2  = stdCells.create("c2", "NAND3_X32");
+  auto id3  = stdCells.create("c3", "NAND3_X32");
+  auto id4  = stdCells.create("c4", "NAND3_X32");
+  auto id5  = stdCells.create("c5", "NAND3_X32");
+  REQUIRE( (&stdCells.footprint(id1) == &stdCells.footprint(id5) ));
+  std::cout << "5 NAND3_X32 instances" << std::endl;
+
+  auto id6  = stdCells.create("c6", "INV_X32");
+  auto id7  = stdCells.create("c7", "INV_X32");
+  auto id8  = stdCells.create("c8", "INV_X32");
+  REQUIRE( (&stdCells.footprint(id6) == &stdCells.footprint(id8) ));
+  std::cout << "3 INV_X32 instances" << std::endl;
+  
+  auto id9  = stdCells.create("c9", "INV_X8");
+  auto id10 = stdCells.create("c10","INV_X8");
+  auto id11 = stdCells.create("c11","INV_X8");
+  auto id12 = stdCells.create("c12","INV_X8");
+  auto id13 = stdCells.create("c13","INV_X8");
+  REQUIRE( (&stdCells.footprint(id9) == &stdCells.footprint(id13) ));
+  std::cout << "5 INV_X8 instances" << std::endl;
+
+  auto id14 = stdCells.create("c14","NOR2_Z16");
+  auto id15 = stdCells.create("c15","NOR2_Z16");
+  auto id16 = stdCells.create("c16","NOR2_Z16");
+  auto id17 = stdCells.create("c17","NOR2_Z16");
+  REQUIRE( (&stdCells.footprint(id14) == &stdCells.footprint(id17) ));
+  std::cout << "4 NOR2_X16 instances" << std::endl;
+  
+  auto id18 = stdCells.create("c18","DFF_X128");
+  auto id19 = stdCells.create("c19","DFF_X128");
+  auto id20 = stdCells.create("c20","DFF_X128");
+  REQUIRE( (&stdCells.footprint(id18) == &stdCells.footprint(id20) ));
+  std::cout << "3 DFF_X32 instances" << std::endl;
+}
+
+
+TEST_CASE("Proxy", "[structural][proxy]") 
+{
+  std::cout << "-------------Proxy---------------" << std::endl;
+  
+  {
+    std::cout << "License Proxy for University License...." << std::endl;
+    RoutingOptimizationProxy routingOptimization(LicenseType::UNIVERSITY_LICENSE);
+    routingOptimization.lowEffortRoutingOptimization();
+    routingOptimization.mediumEffortRoutingOptimization();
+    routingOptimization.highEffortRoutingOptimization();
+  }
+
+  {
+    std::cout << "License Proxy for Basic License...." << std::endl;
+    RoutingOptimizationProxy routingOptimization(LicenseType::BASIC_LICENSE);
+    routingOptimization.lowEffortRoutingOptimization();
+    routingOptimization.mediumEffortRoutingOptimization();
+    routingOptimization.highEffortRoutingOptimization();
+  }
+
+  {
+    std::cout << "License Proxy for Full License...." << std::endl;
+    RoutingOptimizationProxy routingOptimization(LicenseType::FULL_LICENSE);
+    routingOptimization.lowEffortRoutingOptimization();
+    routingOptimization.mediumEffortRoutingOptimization();
+    routingOptimization.highEffortRoutingOptimization();
+  }
+}
+

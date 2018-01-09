@@ -19,7 +19,7 @@ class TimingOptimization : public Optimization
   public:
     TimingOptimization()
     { 
-      std::cout << "TimingOptimization Constructor" << std::endl;
+      std::cout << "Constructing TimingOptimization" << std::endl;
     }
   
     void optimize() override
@@ -33,7 +33,7 @@ class PowerOptimization : public Optimization
   public:
     PowerOptimization()
     {
-      std::cout << "PowerOptimization Constructor" << std::endl;
+      std::cout << "Constructing PowerOptimization" << std::endl;
     }
 
     void optimize() override
@@ -47,7 +47,7 @@ class AreaOptimization : public Optimization
   public:
     AreaOptimization()
     {
-      std::cout << "AreaOptimization Constructor" << std::endl;
+      std::cout << "Constructing AreaOptimization" << std::endl;
     }
 
     void optimize() override

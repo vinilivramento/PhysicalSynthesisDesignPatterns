@@ -83,4 +83,4 @@ namespace behavioral
 
 } //end of namespace behavioral
 
-#endif //PATTERNS_BEHAVIORAL_STRATEGY
+#endif //PATTERNS_BEHAVIORAL_STRATEGY_HPP
